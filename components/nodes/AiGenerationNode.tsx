@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { Sparkles, Download, RefreshCw, Maximize2 } from 'lucide-react';
+import { Sparkles, Download, RefreshCw, Maximize2, X } from 'lucide-react';
 import { saveAs } from 'file-saver';
 import { CustomNodeProps } from '@/types/nodes';
 
 export default function AiGenerationNode({ id, data }: CustomNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   const handleDownload = () => {
@@ -27,16 +27,15 @@ export default function AiGenerationNode({ id, data }: CustomNodeProps) {
   };
 
   const handleExpand = () => {
-    setIsExpanded(!isExpanded);
+    setIsPreviewOpen(true);
   };
 
   return (
-    <div 
-      className={`node-shell bg-[#141414]/90 border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.55)] transition-all duration-200 ${
-        isExpanded ? 'min-w-[600px] min-h-[500px]' : 'min-w-[280px]'
-      }`}
-      data-type="ai-generation"
-    >
+    <>
+      <div 
+        className="node-shell bg-[#141414]/90 border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.55)] transition-all duration-200 min-w-[280px]"
+        data-type="ai-generation"
+      >
       <Handle type="target" position={Position.Left} />
       
       <div className="p-4 flex flex-col h-full">
@@ -48,6 +47,7 @@ export default function AiGenerationNode({ id, data }: CustomNodeProps) {
           <button
             onClick={handleExpand}
             className="p-1 hover:bg-gray-700 rounded transition-colors"
+            title="Agrandir l'aperçu"
           >
             <Maximize2 className="w-4 h-4 text-gray-400" />
           </button>
@@ -64,9 +64,7 @@ export default function AiGenerationNode({ id, data }: CustomNodeProps) {
           ) : data.generatedSvg ? (
             <div className="flex-1 flex flex-col gap-3">
               <div
-                className={`ai-svg-viewport border border-white/10 rounded-lg bg-black/20 overflow-hidden flex-1 ${
-                  isExpanded ? 'h-[380px]' : 'h-[160px]'
-                }`}
+                className="ai-svg-viewport border border-white/10 rounded-lg bg-black/20 overflow-auto flex-1 h-[160px]"
               >
                 <div
                   className="ai-svg-content w-full h-full"
@@ -103,6 +101,69 @@ export default function AiGenerationNode({ id, data }: CustomNodeProps) {
           )}
         </div>
       </div>
-    </div>
+      </div>
+
+      {isPreviewOpen ? (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+          onMouseDown={() => setIsPreviewOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="absolute left-1/2 top-1/2 w-[min(1100px,92vw)] h-[min(760px,88vh)] -translate-x-1/2 -translate-y-1/2 bg-[#0f0f10]/95 border border-white/10 rounded-2xl shadow-[0_30px_120px_rgba(0,0,0,0.75)] overflow-hidden"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                <div className="text-sm font-semibold text-gray-100">Aperçu</div>
+              </div>
+              <button
+                className="p-2 rounded-lg hover:bg-white/5 text-gray-300"
+                onClick={() => setIsPreviewOpen(false)}
+                title="Fermer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 h-[calc(100%-56px)] flex flex-col gap-3">
+              <div className="ai-svg-viewport border border-white/10 rounded-xl bg-black/30 overflow-auto flex-1">
+                {data.generatedSvg ? (
+                  <div
+                    className="ai-svg-content w-full h-full"
+                    dangerouslySetInnerHTML={{ __html: data.generatedSvg }}
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-sm text-gray-400">
+                    Aucun SVG généré.
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDownload}
+                  disabled={!data.generatedSvg}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-300 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Télécharger
+                </button>
+                <button
+                  onClick={handleRegenerate}
+                  disabled={isRegenerating}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-700 disabled:text-gray-300 transition-colors"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+                  {isRegenerating ? 'Régénération...' : 'Régénérer'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
