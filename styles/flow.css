@@ -1,0 +1,232 @@
+/* Custom styles for React Flow nodes - Dark Theme */
+
+/* Base card (we style the inner .node-shell rendered by our node components) */
+.node-shell {
+  backdrop-filter: blur(10px);
+}
+
+/* Hover / selected glow (apply on wrapper state) */
+.react-flow__node:hover .node-shell {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 0 4px rgba(255, 255, 255, 0.03);
+}
+
+.react-flow__node.selected .node-shell {
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 3px rgba(59, 130, 246, 0.35),
+    0 0 18px rgba(59, 130, 246, 0.25);
+}
+
+/* Type-specific selected glow tint */
+.react-flow__node.selected[data-type="text-prompt"] .node-shell {
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 3px rgba(16, 185, 129, 0.35),
+    0 0 18px rgba(16, 185, 129, 0.22);
+}
+
+.react-flow__node.selected[data-type="ai-generation"] .node-shell {
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 0 0 3px rgba(139, 92, 246, 0.35),
+    0 0 18px rgba(139, 92, 246, 0.22);
+}
+
+/* Handle styles */
+.react-flow__handle {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #1a1a1a;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Increase clickable area without changing visuals */
+.react-flow__handle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  background: transparent;
+}
+
+.react-flow__handle:hover {
+  width: 18px;
+  height: 18px;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.react-flow__handle.source {
+  background-color: #10B981;
+}
+
+.react-flow__handle.target {
+  background-color: #3B82F6;
+}
+
+/* Connection line styles */
+.react-flow__connection-line {
+  stroke: #8B5CF6;
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
+  animation: dash 0.5s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+/* Edge styles */
+.react-flow__edge-path {
+  stroke: #8B5CF6;
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #3B82F6;
+  stroke-width: 3;
+}
+
+/* Minimap styles - Dark theme */
+.react-flow__minimap {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
+
+/* Control panel styles - Dark theme */
+.react-flow__controls {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.react-flow__controls-button {
+  border-bottom: 1px solid #444;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #3d3d3d;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+.react-flow__controls-button svg {
+  fill: #fff;
+}
+
+/* Background styles - Dark theme */
+.react-flow__background {
+  background-color: #1a1a1a;
+}
+
+/* Selection box styles */
+.react-flow__selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  border: 1px solid #3B82F6;
+}
+
+/* Node dragging styles */
+.react-flow__node.dragging {
+  opacity: 0.8;
+  cursor: grabbing;
+}
+
+/* Custom node animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.node-generating {
+  animation: pulse 2s infinite;
+}
+
+/* Type-specific hover tint */
+.react-flow__node[data-type="input-svg"]:hover .node-shell {
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(59, 130, 246, 0.22),
+    0 0 0 4px rgba(59, 130, 246, 0.10);
+}
+
+.react-flow__node[data-type="text-prompt"]:hover .node-shell {
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(16, 185, 129, 0.22),
+    0 0 0 4px rgba(16, 185, 129, 0.10);
+}
+
+.react-flow__node[data-type="ai-generation"]:hover .node-shell {
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(139, 92, 246, 0.22),
+    0 0 0 4px rgba(139, 92, 246, 0.10);
+}
+
+/* Ensure wrapper remains transparent; we style inner card */
+.react-flow__node {
+  background: transparent !important;
+  border: none !important;
+  color: inherit !important;
+}
+
+/* Attributions style */
+.react-flow__attribution {
+  background-color: #2d2d2d !important;
+  color: #888 !important;
+}
+
+.react-flow__attribution a {
+  color: #888 !important;
+}
+
+/* SVG viewport helpers: ensure SVG scales to available space */
+.svg-viewport,
+.ai-svg-viewport {
+  position: relative;
+}
+
+.svg-content,
+.ai-svg-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svg-content svg,
+.ai-svg-content svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+.svg-content svg {
+  object-fit: contain;
+}
+
+.ai-svg-content svg {
+  object-fit: contain;
+}

@@ -1,0 +1,25 @@
+flowchart LR
+  U[Utilisateur] -->|Drag/Zoom/Connect| UI[Canvas React Flow (Client)]
+  UI -->|POST /api/generate| API[Next.js Route Handler (Server)]
+  API -->|generateText| AI[Vercel AI SDK + Gemini]
+  AI -->|SVG animé| API
+  API -->|JSON {svg}| UI
+  UI -->|Preview + Download| U
+
+---
+
+sequenceDiagram
+  participant U as Utilisateur
+  participant T as TextNode (Client)
+  participant C as Canvas (Client)
+  participant API as /api/generate (Server)
+  participant G as Gemini (AI)
+
+  U->>T: Clique "Générer"
+  T->>C: triggerGeneration(promptNodeId)
+  C->>C: Résout SVG->Prompt->AI via edges
+  C->>API: POST { svgContent, prompt }
+  API->>G: generateText(model=gemini, prompt=systemPrompt)
+  G-->>API: SVG animé (string)
+  API-->>C: JSON { svg }
+  C->>C: updateNodeData(aiNodeId, {generatedSvg, isLoading:false})
