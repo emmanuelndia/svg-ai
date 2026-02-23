@@ -6,7 +6,6 @@ import {
   Background,
   BackgroundVariant,
   Controls,
-  MiniMap,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -228,16 +227,6 @@ export default function Canvas() {
           variant={BackgroundVariant.Dots}
         />
         <Controls />
-        <MiniMap 
-          nodeColor={(node) => {
-            switch (node.type) {
-              case 'input-svg': return '#3B82F6';
-              case 'text-prompt': return '#10B981';
-              case 'ai-generation': return '#8B5CF6';
-              default: return '#6B7280';
-            }
-          }}
-        />
         
         {isAddPanelOpen ? (
           <Panel
