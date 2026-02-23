@@ -38,6 +38,19 @@ export default function Canvas() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nextNodeId, setNextNodeId] = useState(1);
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(true);
+  const [toast, setToast] = useState<{ message: string; variant: 'error' | 'info' } | null>(null);
+  const toastTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const notify = useCallback((message: string, variant: 'error' | 'info' = 'info') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setToast({ message, variant });
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 3500);
+  }, []);
 
   const addNode = useCallback((type: 'input-svg' | 'text-prompt' | 'ai-generation') => {
     const newNode: Node<NodeData> = {
@@ -92,7 +105,7 @@ export default function Canvas() {
       const prompt = promptNode?.data.prompt;
 
       if (!svgContent || !prompt || !aiNode) {
-        alert('Veuillez connecter un SVG, un prompt, et un noeud AI Generation');
+        notify('Connectez un SVG Source, un Text Prompt, et un AI Generation avant de générer.', 'error');
         return;
       }
       updateNodeData(aiNodeId, { isLoading: true });
@@ -128,10 +141,10 @@ export default function Canvas() {
       } catch (error) {
         console.error('Generation failed:', error);
         updateNodeData(aiNodeId, { isLoading: false });
-        alert(error instanceof Error ? error.message : 'Erreur lors de la génération');
+        notify(error instanceof Error ? error.message : 'Erreur lors de la génération', 'error');
       }
     },
-    [getNode, updateNodeData]
+    [getNode, notify, updateNodeData]
   );
 
   const triggerGeneration = useCallback(
@@ -140,44 +153,44 @@ export default function Canvas() {
         ? getNode(promptNodeId)
         : nodes.find((n) => n.type === 'text-prompt');
       if (!promptNode) {
-        alert('Ajoutez un noeud Text Prompt');
+        notify('Ajoutez un noeud Text Prompt.', 'error');
         return;
       }
 
       const svgNodeId = getUpstreamSource(promptNode.id);
       if (!svgNodeId) {
-        alert('Connectez un SVG Source au Text Prompt');
+        notify('Connectez un SVG Source au Text Prompt.', 'error');
         return;
       }
 
       const aiNodeId = edges.find((e) => e.source === promptNode.id)?.target;
       if (!aiNodeId) {
-        alert('Connectez le Text Prompt à un noeud AI Generation');
+        notify('Connectez le Text Prompt à un noeud AI Generation.', 'error');
         return;
       }
 
       await runGeneration(svgNodeId, promptNode.id, aiNodeId);
     },
-    [edges, getNode, getUpstreamSource, nodes, runGeneration]
+    [edges, getNode, getUpstreamSource, nodes, notify, runGeneration]
   );
 
   const triggerRegeneration = useCallback(
     async (aiNodeId: string) => {
       const promptNodeId = getUpstreamSource(aiNodeId);
       if (!promptNodeId) {
-        alert('Connectez un Text Prompt au noeud AI Generation');
+        notify('Connectez un Text Prompt au noeud AI Generation.', 'error');
         return;
       }
 
       const svgNodeId = getUpstreamSource(promptNodeId);
       if (!svgNodeId) {
-        alert('Connectez un SVG Source au Text Prompt');
+        notify('Connectez un SVG Source au Text Prompt.', 'error');
         return;
       }
 
       await runGeneration(svgNodeId, promptNodeId, aiNodeId);
     },
-    [getUpstreamSource, runGeneration]
+    [getUpstreamSource, notify, runGeneration]
   );
 
   // Set up global window functions for node communication
@@ -227,6 +240,20 @@ export default function Canvas() {
           variant={BackgroundVariant.Dots}
         />
         <Controls />
+
+        {toast ? (
+          <Panel position="top-center" className="pointer-events-none mt-3">
+            <div
+              className={`px-3 py-2 rounded-lg border shadow-[0_12px_40px_rgba(0,0,0,0.65)] backdrop-blur-md text-sm max-w-[520px] ${
+                toast.variant === 'error'
+                  ? 'bg-red-950/60 border-red-500/30 text-red-100'
+                  : 'bg-[#141414]/80 border-white/10 text-gray-100'
+              }`}
+            >
+              {toast.message}
+            </div>
+          </Panel>
+        ) : null}
         
         {isAddPanelOpen ? (
           <Panel
