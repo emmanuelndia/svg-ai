@@ -27,7 +27,7 @@ export default function TextNode({ id, data }: CustomNodeProps) {
 
   return (
     <div 
-      className="node-shell bg-[#141414]/90 border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.55)] min-w-[260px] transition-all duration-200"
+      className="node-shell bg-[#141414]/90 border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.55)] min-w-[320px] transition-all duration-200"
       data-type="text-prompt"
     >
       <Handle type="target" position={Position.Left} />

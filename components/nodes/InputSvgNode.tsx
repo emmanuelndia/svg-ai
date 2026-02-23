@@ -74,12 +74,13 @@ export default function InputSvgNode({ id, data }: CustomNodeProps) {
 
   return (
     <div 
-      className="node-shell bg-[#141414]/90 border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.55)] min-w-[260px] transition-all duration-200"
+      // Remplacement de min-w-[260px] par w-[320px] pour une largeur fixe et stricte
+      className="node-shell bg-[#141414]/90 border border-white/10 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.55)] w-[320px] transition-all duration-200"
       data-type="input-svg"
     >
       <Handle type="source" position={Position.Right} />
       
-      <div className="p-3">
+      <div className="p-4">
         <div className="flex items-center gap-2 mb-3">
           <FileImage className="w-5 h-5 text-blue-400" />
           <h3 className="font-semibold text-gray-100">SVG Source</h3>
@@ -120,7 +121,7 @@ export default function InputSvgNode({ id, data }: CustomNodeProps) {
         </div>
 
         {/* Tab Content */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {activeTab === 'upload' && (
             <div
               className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
@@ -132,26 +133,30 @@ export default function InputSvgNode({ id, data }: CustomNodeProps) {
             >
               {svgContent ? (
                 <div className="space-y-3">
-                  <div className="svg-viewport border border-white/10 rounded-md bg-black/20 overflow-hidden h-[140px]">
-                    <div className="svg-content w-full h-full" dangerouslySetInnerHTML={{ __html: svgContent }} />
+                  {/* Container SVG strict : il force le SVG à faire 100% de la div sans jamais déborder */}
+                  <div className="svg-viewport border border-white/10 rounded-lg bg-[#0a0a0c] overflow-hidden h-[140px] flex items-center justify-center p-2">
+                    <div 
+                      className="w-full h-full flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:object-contain pointer-events-none" 
+                      dangerouslySetInnerHTML={{ __html: svgContent }} 
+                    />
                   </div>
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     className="text-sm text-blue-400 hover:text-blue-300"
                   >
-                    Change file
+                    Changer de fichier
                   </button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <Upload className="w-12 h-12 text-gray-500 mx-auto" />
+                  <Upload className="w-10 h-10 text-gray-500 mx-auto" />
                   <div>
-                    <p className="text-gray-400 mb-2">Drag SVG here</p>
+                    <p className="text-gray-400 mb-2 text-sm">Glissez le SVG ici</p>
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="px-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-600 hover:text-white transition-colors text-sm font-medium"
                     >
-                      Browse
+                      Parcourir
                     </button>
                   </div>
                 </div>
@@ -164,15 +169,15 @@ export default function InputSvgNode({ id, data }: CustomNodeProps) {
               <textarea
                 value={pastedSvg}
                 onChange={(e) => setPastedSvg(e.target.value)}
-                placeholder="Paste your SVG code here..."
-                className="w-full h-32 p-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 font-mono text-sm"
+                placeholder="Collez votre code SVG ici..."
+                className="w-full h-32 p-3 bg-[#0a0a0c] border border-white/10 text-gray-100 rounded-lg resize-none focus:ring-1 focus:ring-blue-500 outline-none placeholder-gray-500 font-mono text-xs"
               />
               <button
                 onClick={handlePaste}
                 disabled={!pastedSvg.trim()}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+                className="w-full px-4 py-2 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-600 hover:text-white disabled:opacity-50 transition-colors text-sm font-medium"
               >
-                Paste SVG
+                Valider le SVG
               </button>
             </div>
           )}
@@ -180,30 +185,19 @@ export default function InputSvgNode({ id, data }: CustomNodeProps) {
           {activeTab === 'generate' && (
             <div className="space-y-3">
               <textarea
-                placeholder="Describe the SVG you want to generate..."
-                className="w-full h-32 p-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+                placeholder="Décrivez le SVG à générer (Bientôt disponible)..."
+                disabled
+                className="w-full h-32 p-3 bg-[#0a0a0c] border border-white/10 text-gray-100 rounded-lg resize-none placeholder-gray-600 text-sm opacity-50 cursor-not-allowed"
               />
-              <button
-                className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Generate SVG
-              </button>
             </div>
           )}
 
-          {/* SVG Preview */}
-          {svgContent && (
-            <div className="space-y-3">
-              <div className="svg-viewport border border-white/10 rounded-lg bg-black/20 overflow-hidden h-[140px]">
-                <div className="svg-content w-full h-full" dangerouslySetInnerHTML={{ __html: svgContent }} />
-              </div>
-              
-              {/* SVG Code Preview */}
-              <div className="bg-gray-900 rounded-lg p-3 max-h-24 overflow-y-auto">
-                <pre className="text-xs text-gray-400 font-mono">
-                  {svgContent.substring(0, 200)}{svgContent.length > 200 ? '...' : ''}
-                </pre>
-              </div>
+          {/* SVG Code Preview */}
+          {svgContent && activeTab !== 'upload' && (
+            <div className="bg-[#0a0a0c] border border-white/10 rounded-lg p-3 max-h-24 overflow-y-auto">
+              <pre className="text-xs text-gray-400 font-mono">
+                {svgContent.substring(0, 150)}{svgContent.length > 150 ? '...' : ''}
+              </pre>
             </div>
           )}
 
@@ -211,10 +205,10 @@ export default function InputSvgNode({ id, data }: CustomNodeProps) {
           {(svgContent || pastedSvg) && (
             <button
               onClick={handleClear}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors text-sm font-medium"
             >
               <Trash2 className="w-4 h-4" />
-              Clear
+              Effacer
             </button>
           )}
         </div>
