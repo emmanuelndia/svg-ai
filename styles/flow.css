@@ -231,3 +231,15 @@
 .ai-svg-content svg {
   object-fit: contain;
 }
+
+/* Modal preview: better for scrolling animations (fit width, natural height) */
+.ai-preview-modal .ai-svg-content {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.ai-preview-modal .ai-svg-content svg {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+}

@@ -129,7 +129,7 @@ export default function AiGenerationNode({ id, data }: CustomNodeProps) {
             </div>
 
             <div className="p-4 h-[calc(100%-56px)] flex flex-col gap-3">
-              <div className="ai-svg-viewport border border-white/10 rounded-xl bg-black/30 overflow-auto flex-1">
+              <div className="ai-preview-modal ai-svg-viewport border border-white/10 rounded-xl bg-black/30 overflow-auto flex-1">
                 {data.generatedSvg ? (
                   <div
                     className="ai-svg-content w-full h-full"
